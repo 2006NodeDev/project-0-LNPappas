@@ -58,6 +58,8 @@ app.post('/login', (req:Request, res:Response)=>{
             // proper credetials result in unique session
             if(user.username === username && user.password === password){
                 req.session.user = user;
+                console.log("login successful");
+                
                 res.json(user);
                 found = true;
             }

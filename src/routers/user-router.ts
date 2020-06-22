@@ -12,6 +12,7 @@ userRouter.get('/', authorizationMiddleware(['admin']), (req:Request, res:Respon
     res.json(users); // respond to get request with user array if authorization === admin
 })
 
+
 userRouter.get('/:id', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
     let {id} = req.params;
     if(isNaN(+id)){

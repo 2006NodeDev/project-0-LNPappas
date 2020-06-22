@@ -13,7 +13,7 @@ export function authenticationMiddleware(req:Request, res:Response, next:NextFun
     if(!req.session.user){
         throw new AuthenticationFailureError();
     } else{
-        console.log(`User: ${req.session.user.username}, Role: ${req.session.user.role}`);
+        console.log(`User: ${req.session.user.username}, Role: ${req.session.user.role.role}`);
         next();
     }
 }
