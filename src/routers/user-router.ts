@@ -105,7 +105,7 @@ export let users:User[] = [
         },
     },
     {
-        userId:1,
+        userId:3,
         username:'Bucks',
         password:'password',
         firstName:'Barry',
@@ -117,3 +117,21 @@ export let users:User[] = [
         },
     },
 ]
+
+
+/* json format for post tests:
+
+    {
+        "userId":"2",
+        "username":"Wilber",
+        "password":"password",
+        "firstName":"Charlotte",
+        "lastName":"Web",
+        "email":"Wilber@financeManager.com",
+        "role":{
+            "roleId": "2",
+            "role": "finanace-manager"
+        }
+    }
+
+*/
