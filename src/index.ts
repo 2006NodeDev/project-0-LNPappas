@@ -42,7 +42,22 @@ app.use(sessionMiddleware);
 app.use('/user', userRouter);
 app.use('/reimbursements', reimbursementRouter);
 
-// User login, validate authentication
+/*
+    Login
+        URL: /login
+        Method: POST
+        Request:
+            {
+                username: string,
+                password: string
+            }
+        Response: User
+        Error Response:
+            Status Code: 400 BAD REQUEST
+            {
+                message: "Invalid Credentials"
+            }
+*/
 app.post('/login', (req:Request, res:Response)=>{
 
     // get username and password from body of request

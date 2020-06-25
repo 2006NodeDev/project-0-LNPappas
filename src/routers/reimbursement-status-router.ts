@@ -6,12 +6,13 @@ import { Reimbursement } from '../models/Reimbursement';
 export const reimbursementStatusRouter = express.Router();
 
 /*
-    Find Reimbursements By Status ordered by date
-    URL: /reimbursements/status/:statusId
-    Alt: /reimbursements/status/:statudId/date-submitted?start=:startDate&end=:endDate
-    Method: GET
-    Authorization: finance-manager, admin
-    Response:[ Reimbursement ]
+    Find Reimbursements By Status 
+        ordered by date
+        URL: /reimbursements/status/:statusId
+        Alt: /reimbursements/status/:statudId/date-submitted?start=:startDate&end=:endDate
+        Method: GET
+        Authorization: finance-manager, admin
+        Response:[ Reimbursement ]
 */
 reimbursementStatusRouter.get('/:statusId', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
     let{statusId} = req.params;

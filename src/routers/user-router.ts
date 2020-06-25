@@ -12,7 +12,13 @@ userRouter.get('/', authorizationMiddleware(['admin']), (req:Request, res:Respon
     res.json(users); // respond to get request with user array if authorization === admin
 })
 
-
+/*
+    Find Users
+        URL: /users
+        Method: GET
+        Allowed Roles: admin, finance-manager
+        Response: [ User ]
+*/
 userRouter.get('/:id', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
     let {id} = req.params;
     if(isNaN(+id)){
@@ -31,6 +37,15 @@ userRouter.get('/:id', authorizationMiddleware(['admin', 'finance-manager']), (r
     }
 })
 
+/*
+    Find Reimbursements By Status 
+        order by date
+        URL: /reimbursements/status/:statusId
+        Alt: /reimbursements/status/:statudId/date-submitted?start=:startDate&end=:endDate
+        Method: GET
+        Allowed Roles: admin, finance-manager
+        Response: [ Reimbursement ]
+*/
 userRouter.patch('/', authorizationMiddleware(['admin']), (req:Request, res:Response, next:NextFunction)=>{
     let id = req.body.userId;
 

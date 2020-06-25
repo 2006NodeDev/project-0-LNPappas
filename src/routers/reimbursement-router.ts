@@ -12,12 +12,13 @@ reimbursementRouter.use('/author/userId', reimbursementAuthorRouter);
 
 /*
     Submit Reimbursement
-    URL: /reimbursements
-    Method: POST
-    Request: The reimbursementId should be 0
-    Response:
-        Status Code 201 CREATED
-        Reimbursement
+        URL: /reimbursements
+        Method: POST
+        Request: The reimbursementId should be 0
+        Allowed Roles: admin, finance-manager, user
+        Response:
+            Status Code 201 CREATED
+            Reimbursement
 */
 reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager', 'user']), (req:Request, res:Response, next:NextFunction)=>{
     let {
@@ -42,15 +43,14 @@ reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager
 
 /*
     Update Reimbursement
-    URL: /reimbursements
-    Method: PATCH
-    Allowed Roles: admin, finance-manager
-    Request: The reimbursementId must be present as well 
-        as all fields to update, any field left undefined 
-        will not be updated. This can be used to approve 
-        and deny.
-    Response:
-    Reimbursement
+        URL: /reimbursements
+        Method: PATCH
+        Allowed Roles: admin, finance-manager
+        Request: The reimbursementId must be present as well 
+            as all fields to update, any field left undefined 
+            will not be updated. This can be used to approve 
+            and deny.
+        Response: Reimbursement
 */
 reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
     let id = req.body.reimbursementId;

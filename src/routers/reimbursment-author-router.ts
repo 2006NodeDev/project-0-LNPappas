@@ -6,12 +6,13 @@ import { reimbursements } from './reimbursement-router';
 export const reimbursementAuthorRouter = express.Router();
 
 /*
-    Find Reimbursements By User, ordered by date
-    URL: /reimbursements/author/userId/:userId
-    Alt: /reimbursements/author/userId/:userId/date-submitted?start=:startDate&end=:endDate
-    Method: GET
-    Allowed Roles: admin, finance-manager, userId of user
-    Response:[ Reimbursement ]
+    Find Reimbursements By User
+        ordered by date
+        URL: /reimbursements/author/userId/:userId
+        Alt: /reimbursements/author/userId/:userId/date-submitted?start=:startDate&end=:endDate
+        Method: GET
+        Allowed Roles: admin, finance-manager, current user if === userId
+        Response:[ Reimbursement ]
 */
 
 reimbursementAuthorRouter.get('/:userId', authorizationMiddleware(['admin', 'finance-manager', 'current']), (req:Request, res:Response, next:NextFunction)=>{
