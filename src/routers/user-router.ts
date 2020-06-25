@@ -16,7 +16,7 @@ userRouter.get('/', authorizationMiddleware(['admin']), (req:Request, res:Respon
 userRouter.get('/:id', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
     let {id} = req.params;
     if(isNaN(+id)){
-        res.status(400).send("Must be a number");
+        res.status(400).send("ID must be a number");
     } else{
         let found = false;
         for(const user of users){
@@ -102,7 +102,7 @@ export let users:User[] = [
         email:'Wilber@financeManager.com',
         role:{
             roleId: 2,
-            role: "finanace-manager"
+            role: "finance-manager"
         },
     },
     {
@@ -134,5 +134,21 @@ export let users:User[] = [
             "role": "finanace-manager"
         }
     }
+
+User login:
+{
+    "username":"Bucks",
+    "password":"password"
+}
+Admin login:
+{
+    "username":"TheSpy",
+    "password":"password"
+}
+Financial Login:
+{
+    "username":"Wilber",
+    "password":"password"
+}
 
 */

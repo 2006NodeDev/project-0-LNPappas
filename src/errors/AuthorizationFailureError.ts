@@ -13,6 +13,6 @@ import { HttpError } from "./HttpError";
 
 export class AuthorizationFailureError extends HttpError{
     constructor(){
-        super(401, "The incoming token has expired")
+        super(401, "The incoming token has expired");
     }
 }

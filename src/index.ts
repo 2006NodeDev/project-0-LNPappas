@@ -28,6 +28,7 @@ import express, { Request, Response } from 'express';
 import { sessionMiddleware } from './middleware/session-middleware';
 import { AuthenticationFailureError } from './errors/AuthenticationFailureError';
 import { userRouter, users } from './routers/user-router';
+import { reimbursementRouter } from './routers/reimbursement-router';
 
 // returns pre-build express app, must run first
 const app = express();
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(sessionMiddleware);
 
 app.use('/user', userRouter);
+app.use('/reimbursements', reimbursementRouter);
 
 // User login, validate authentication
 app.post('/login', (req:Request, res:Response)=>{
