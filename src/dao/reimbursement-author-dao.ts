@@ -7,7 +7,7 @@ export async function getReimbursementAuthorById(id:number):Promise<Reimbursemen
     let client:PoolClient;
     try {
         client = await connectionPool.connect();
-        let results:QueryResult = await client.query(`select r.*, rs.status, rt."type" from ers.reimbursement r
+        let results:QueryResult = await client.query(`sselect r.*, rs.status, rs."status_id", rt."type", rt."type_id" from ers.reimbursement r
                                                         join ers.reimbursement_status rs on r.status = rs.status_id
                                                         join ers.reimbursement_type rt on r."type" = rt.type_id
                                                         where r."author" = $1;`, [id]);

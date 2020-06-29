@@ -4,7 +4,7 @@ import { reimbursementStatusRouter } from './reimbursement-status-router'
 import { reimbursementAuthorRouter } from './reimbursment-author-router';
 import { authorizationMiddleware } from '../middleware/authorization-middleware';
 import { InputError } from '../errors/InputError';
-import { saveOneReimbursement, getReimbursementsById } from '../dao/rembursement-dao';
+import { saveOneReimbursement, getReimbursementsById, getAllReimbursements, updateOneReimbursement } from '../dao/rembursement-dao';
 
 export const reimbursementRouter = express.Router();
 
@@ -25,14 +25,13 @@ reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager
     let {
         author,
         amount,
-        dateSubmitted,
         description,
+        dateSubmitted,
         type
     } = req.body
-    if(!author || !amount || !dateSubmitted || !description || !type){
+    if(!author || !amount || !description || !dateSubmitted || !type){
         next(InputError)
     } 
-
     let newReimbursement:Reimbursement = {
         reimbursementId:0,
         author,
@@ -41,7 +40,7 @@ reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager
         dateResolved:null,
         description,
         resolver:null,
-        status:1,
+        status:{statusId:1, status:'processing'},
         type
     }
 
@@ -80,7 +79,7 @@ reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manage
                 reimbursement.amount = req.body.amount;
             }
             if(req.body.dateSubmitted){
-                reimbursement.dateSubmitted = req.body.dateSubmitted;
+                reimbursement.dateResolved = req.body.dateSubmitted;
             }
             if(req.body.dateResolved){
                 reimbursement.dateResolved = req.body.dateResolved;
@@ -92,13 +91,38 @@ reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manage
                 reimbursement.resolver = req.body.resolver;
             }
             if (req.body.status){
-                reimbursement.status = req.body.status;
+                reimbursement.status.statusId = req.body.status.statusId;
             }
             if (req.body.type){
-                reimbursement.type = req.body.type;
+                reimbursement.type.typeId = req.body.type.typeId;
             }
+            let updatedReimbursement = await updateOneReimbursement(reimbursement);
+            res.json(updatedReimbursement);
         }catch(error){
             next(error)
         }
     }
 });
+
+reimbursementRouter.get('/', async (req:Request ,res:Response, next:NextFunction)=>{
+    try {
+        let allReimbursments = await getAllReimbursements();
+        res.json(allReimbursments);
+    } catch (error) {
+        next(error);
+    }
+})
+
+reimbursementRouter.get('/:id', async (req:Request, res:Response, next:NextFunction)=>{
+    let {id} = req.params;
+    if(isNaN(+id)){
+        res.status(400).send("ID must be a number");
+    } else{
+        try {
+            let user = await getReimbursementsById(+id);
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+})
