@@ -10,25 +10,14 @@
     employees in the company. Finance managers are 
     authorized to approve and deny requests for expense 
     reimbursement.
-*/
-
-/* 
-    Start project by creating and installing necessary libraries: 
-        npm init
-        npm install express
-        npm install -D typescript ts-node @types/express
-        copy in tsconfig.json
-        npm install express-session
-        npm install -D @types/express-session nodemon
-        in package.json: "main": "src/index.ts"
-        in package.json scripts{ "start": "nodemon --exec ts-node src/index.ts", }
 */ 
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { sessionMiddleware } from './middleware/session-middleware';
 import { AuthenticationFailureError } from './errors/AuthenticationFailureError';
-import { userRouter, users } from './routers/user-router';
+import { userRouter } from './routers/user-router';
 import { reimbursementRouter } from './routers/reimbursement-router';
+import { getUserByUserNameAndPassword } from './dao/user-dao';
 
 // returns pre-build express app, must run first
 const app = express();
@@ -39,7 +28,10 @@ app.use(express.json());
 // middleware: creates unique sessions 
 app.use(sessionMiddleware);
 
+// create router for /users
 app.use('/user', userRouter);
+
+// create router for /reimbursemts
 app.use('/reimbursements', reimbursementRouter);
 
 /*
@@ -58,7 +50,7 @@ app.use('/reimbursements', reimbursementRouter);
                 message: "Invalid Credentials"
             }
 */
-app.post('/login', (req:Request, res:Response)=>{
+app.post('/login', async (req:Request, res:Response, next:NextFunction)=>{
 
     // get username and password from body of request
     let username = req.body.username;
@@ -67,25 +59,15 @@ app.post('/login', (req:Request, res:Response)=>{
     // if username or password are empty throw error
     if(!username || !password){
         throw new AuthenticationFailureError();
-
     // if username & password are valid & found in database, request a session for the user & respond with the user info in json format
     } else{
-        let found = false
-        for(const user of users){
-            // proper credetials result in unique session
-            if(user.username === username && user.password === password){
-                req.session.user = user;
-                console.log("login successful");
-                
-                res.json(user);
-                found = true;
-            }
+        try {
+            let user = await getUserByUserNameAndPassword(username, password);
+            req.session.user = user;
+            res.json(user);
+        } catch (error) {
+            next(error);
         }
-        // if username & password not found it database throw an error
-        if(!found){
-            throw new AuthenticationFailureError();
-        }
-
     }
 })
 

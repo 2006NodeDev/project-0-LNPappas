@@ -3,13 +3,19 @@ import express, { Request, Response, NextFunction, response } from 'express';
 import { User } from '../models/User'
 import { authenticationMiddleware } from '../middleware/authentication-middleware';
 import { authorizationMiddleware } from '../middleware/authorization-middleware';
+import { getAllUsers } from '../dao/user-dao';
 
 export const userRouter = express.Router();
 
 userRouter.use(authenticationMiddleware); // authenticates user
 
-userRouter.get('/', authorizationMiddleware(['admin']), (req:Request, res:Response, next:NextFunction)=>{
-    res.json(users); // respond to get request with user array if authorization === admin
+userRouter.get('/', authorizationMiddleware(['admin']), async (req:Request, res:Response, next:NextFunction)=>{
+    try {
+        let allUsers = await getAllUsers();
+        res.json(allUsers);
+    } catch (error) {
+        next(error);
+    }
 })
 
 /*
