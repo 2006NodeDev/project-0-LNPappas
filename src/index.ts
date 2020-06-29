@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(sessionMiddleware);
 
 // create router for /users
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 // create router for /reimbursemts
 app.use('/reimbursements', reimbursementRouter);

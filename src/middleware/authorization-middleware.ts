@@ -14,7 +14,6 @@ export function authorizationMiddleware(roles:string[]){
         let allowed = false; //throws error if allowed is false & session request fails
         // for of loop because array
         for(const role of roles){
-            console.log(`User role: ${req.session.user.role.role}, role array: ${role}`);
             if(req.session.user.role.role === role){
                 allowed = true
                 next()

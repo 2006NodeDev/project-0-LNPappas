@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { authorizationMiddleware } from '../middleware/authorization-middleware';
-import { reimbursements } from './reimbursement-router';
-import { Reimbursement } from '../models/Reimbursement';
+import { getReimbursementStatusById } from '../dao/reimbursement-status-dao';
 
 export const reimbursementStatusRouter = express.Router();
 
@@ -14,24 +13,16 @@ export const reimbursementStatusRouter = express.Router();
         Authorization: finance-manager, admin
         Response:[ Reimbursement ]
 */
-reimbursementStatusRouter.get('/:statusId', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
+reimbursementStatusRouter.get('/:statusId', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
     let{statusId} = req.params;
-    let reimbursement_list:Reimbursement[] = [];
     if(isNaN(+statusId)){
         res.status(400).send("StatusId must be a number")
     } else{
-        let found = false;
-        for(const reimbursement of reimbursements){
-            
-            if(reimbursement.status === +statusId){
-                reimbursement_list.push(reimbursement);
-                found = true;
-            }
-        }
-        if(!found){
-            res.status(404).send('Status not found')
-        } else{
-            res.json(reimbursement_list);
+        try {
+            let reimbursement = await getReimbursementStatusById(+statusId);
+            res.json(reimbursement);
+        } catch (error) {
+            next(error);
         }
     }
 })

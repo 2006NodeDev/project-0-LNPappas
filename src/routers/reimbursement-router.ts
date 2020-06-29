@@ -4,6 +4,7 @@ import { reimbursementStatusRouter } from './reimbursement-status-router'
 import { reimbursementAuthorRouter } from './reimbursment-author-router';
 import { authorizationMiddleware } from '../middleware/authorization-middleware';
 import { InputError } from '../errors/InputError';
+import { saveOneReimbursement, getReimbursementsById } from '../dao/rembursement-dao';
 
 export const reimbursementRouter = express.Router();
 
@@ -20,24 +21,35 @@ reimbursementRouter.use('/author/userId', reimbursementAuthorRouter);
             Status Code 201 CREATED
             Reimbursement
 */
-reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager', 'user']), (req:Request, res:Response, next:NextFunction)=>{
+reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager', 'user']), async (req:Request, res:Response, next:NextFunction)=>{
     let {
-        reimbursementId = 0,
         author,
         amount,
         dateSubmitted,
-        dateResolved,
         description,
-        resolver,
-        status,
         type
     } = req.body
-    if(reimbursementId && author && amount && dateSubmitted && dateResolved && description && resolver && status && type){
-        reimbursements.push({reimbursementId, author, amount, dateSubmitted, dateResolved, description, resolver, status, type})
-        res.status(201).send(reimbursements[reimbursements.length-1]);
-    } else{
-        console.log(`reimbursement id: ${reimbursementId}`)
-        throw new InputError
+    if(!author || !amount || !dateSubmitted || !description || !type){
+        next(InputError)
+    } 
+
+    let newReimbursement:Reimbursement = {
+        reimbursementId:0,
+        author,
+        amount,
+        dateSubmitted,
+        dateResolved:null,
+        description,
+        resolver:null,
+        status:1,
+        type
+    }
+
+    try {
+        let savedReimbursement = await saveOneReimbursement(newReimbursement);
+        res.json(savedReimbursement);
+    } catch (error) {
+        next(error);
     }
 })
 
@@ -52,118 +64,41 @@ reimbursementRouter.post('/', authorizationMiddleware(['admin', 'finance-manager
             and deny.
         Response: Reimbursement
 */
-reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manager']), (req:Request, res:Response, next:NextFunction)=>{
-    let id = req.body.reimbursementId;
-    if(!id){
+reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
+    let {reimbursementId} = req.body;
+    if(!reimbursementId){
         throw InputError
-    }else if(isNaN(+id)){
+    }else if(isNaN(+reimbursementId)){
         res.status(400).send("Reimbursement Id must be a number");
     }else{
-        let found = false;
-        for(const reimbursement of reimbursements){
-            if(reimbursement.reimbursementId === +id){
-                let author = req.body.author;
-                let amount = req.body.amount;
-                let dateSubmitted = req.body.dateSubmitted;
-                let dateResolved = req.body.dateResolved;
-                let description = req.body.description;
-                let resolver = req.body.resolver;
-                let status = req.body.status;
-                let type = req.body.type;
-
-                if(author){
-                    reimbursement.author = author;
-                }
-                if(amount){
-                    reimbursement.amount = amount;
-                }
-                if(dateSubmitted){
-                    reimbursement.dateSubmitted = dateSubmitted;
-                }
-                if(dateResolved){
-                    reimbursement.dateResolved = dateResolved;
-                }
-                if(description){
-                    reimbursement.description = description;
-                }
-                if (resolver){
-                    reimbursement.resolver = resolver;
-                }
-                if (status){
-                    reimbursement.status = status;
-                }
-                if (type){
-                    reimbursement.type = type;
-                }
-
-                res.json(reimbursement);
-                found = true;
+        try{
+            let reimbursement = await getReimbursementsById(+reimbursementId);
+            if(req.body.author){
+                reimbursement.author = req.body.author;
             }
-        }
-        if(!found){
-            res.status(404).send('Reimbursment not found')
+            if(req.body.amount){
+                reimbursement.amount = req.body.amount;
+            }
+            if(req.body.dateSubmitted){
+                reimbursement.dateSubmitted = req.body.dateSubmitted;
+            }
+            if(req.body.dateResolved){
+                reimbursement.dateResolved = req.body.dateResolved;
+            }
+            if(req.body.description){
+                reimbursement.description = req.body.description;
+            }
+            if (req.body.resolver){
+                reimbursement.resolver = req.body.resolver;
+            }
+            if (req.body.status){
+                reimbursement.status = req.body.status;
+            }
+            if (req.body.type){
+                reimbursement.type = req.body.type;
+            }
+        }catch(error){
+            next(error)
         }
     }
-})
-
-export let reimbursements:Reimbursement[] = [
-    {
-        reimbursementId:1,
-        author:1,
-        amount:36.08,
-        dateSubmitted:2008,
-        dateResolved:2008,
-        description:"Bought office supplies",
-        resolver:2,
-        status:2,
-        type:2,
-    },
-    {
-        reimbursementId:2,
-        author:3,
-        amount:2600.57,
-        dateSubmitted:2019,
-        dateResolved:2020,
-        description:"Bought computer",
-        resolver:2,
-        status:2,
-        type:2,
-    },
-    {
-        reimbursementId:3,
-        author:3,
-        amount:260000000.07,
-        dateSubmitted:2020,
-        dateResolved:2020,
-        description:"Bought spaceship",
-        resolver:2,
-        status:3,
-        type:2,
-    },
-    {
-        reimbursementId:4,
-        author:1,
-        amount:2.07,
-        dateSubmitted:2015,
-        dateResolved:2020,
-        description:"Bought pen",
-        resolver:2,
-        status:2,
-        type:2,
-    }
-];
-
-/*
-{
-    "reimbursementId":"0",
-    "author":"1",
-    "amount":"900",
-    "dateSubmitted":"2.29.2015",
-    "dateResolved":"2016",
-    "description":"New Shoes",
-    "resolver":"2",
-    "status":"2",
-    "type":"2",
-}
-
-*/
+});
