@@ -10,30 +10,31 @@ create table users(
 	"user_id" serial primary key, --don't provide value for serial column
 	"username" text not null unique,
 	"password" text not null, --"" b/c password is a keyword
-	"firstName" text not null,
-	"lastName" text not null,
+	"first_name" text not null,
+	"last_name" text not null,
 	"email" text,
-	"role" int references roles("role_id") --FK to roles table 
+	"role" int not null references roles("role_id") --FK to roles table 
 );
+	
 
 create table reimbursement_status(
 	"status_id" serial primary key,
-	"status" text
+	"status" text not null
 );
 
 create table reimbursement_type(
 	"type_id" serial primary key,
-	"type" text
+	"type" text not null
 );
 
 create table reimbursement(
 	"reimbursement_id" serial primary key,
 	"author" int references users("user_id"),
-	"amount" numeric(100,2),
-	"date_submitted" date,
+	"amount" numeric(100,2) not null,
+	"date_submitted" date not null,
 	"date_resolved" date,
-	"description" text,
+	"description" text not null,
 	"resolver" int,
-	"status" int references reimbursement_status("status_id"),
-	"type" int references reimbursement_type("type_id")
+	"status" int not null references reimbursement_status("status_id"),
+	"type" int not null references reimbursement_type("type_id")
 );

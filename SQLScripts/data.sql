@@ -5,7 +5,7 @@ insert into roles ("role")
 
 select * from roles r; 
 
-insert into users("username","password","firstName", "lastName", "email", "role")
+insert into users("username","password","first_name", "last_name", "email", "role")
 	values	('patches','password','Richard','Hendricks','patches@piedpiper.com','1'),
 			('koolaid','password','Erlich','Bachman','koolaid@aviato.net','3'),
 			('bighead','password','Nelson','Bighetti','bighead@hooli.com','3'),
@@ -42,11 +42,10 @@ insert into reimbursement ("author", "amount", "date_submitted", "date_resolved"
 insert into reimbursement ("author", "amount", "date_submitted","description","status", "type" )
 	values	('4','8.99','2019-12-08','beer','1','1');
 
-select  u2."firstName", u2."lastName", r2.date_submitted, r2.date_resolved, rt."type", r2.description, r2.amount, rs.status, u."firstName", u."lastName" 
-		from ers.reimbursement as r2
-		join ers.users u on u.user_id = r2.resolver 
-		left join ers.users u2 on u2.user_id = r2.author
-		left join ers.reimbursement_status rs on rs.status_id = r2.status
-		left join ers.reimbursement_type rt on rt.type_id = r2."type" 
-		group by r2.date_submitted, r2.date_resolved, r2.description, r2.amount, rs.status, rt."type", u2."firstName", u2."lastName", u."firstName", u."lastName"
-		order by r2.date_submitted;
+select r.*, rs.status, rt."type" from ers.reimbursement r
+		join ers.reimbursement_status rs on r.status = rs.status_id
+		join ers.reimbursement_type rt on r."type" = rt.type_id
+		order by r.date_submitted; 
+
+
+
