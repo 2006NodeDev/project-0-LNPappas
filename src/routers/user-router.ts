@@ -82,7 +82,7 @@ userRouter.patch('/', authorizationMiddleware(['admin']), async (req:Request, re
             if(req.body.email){
                 user.email = req.body.email;
             }
-            if (req.body.role.roleId){
+            if (req.body.role){
                 user.role.roleId = req.body.role.roleId;
             }
 

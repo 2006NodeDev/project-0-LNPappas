@@ -13,7 +13,7 @@ export const reimbursementStatusRouter = express.Router();
         Authorization: finance-manager, admin
         Response:[ Reimbursement ]
 */
-reimbursementStatusRouter.get('/:statusId', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
+reimbursementStatusRouter.get('/:statusId', authorizationMiddleware(['admin', 'finance-manager', 'current']), async (req:Request, res:Response, next:NextFunction)=>{
     let{statusId} = req.params;
     if(isNaN(+statusId)){
         res.status(400).send("StatusId must be a number")

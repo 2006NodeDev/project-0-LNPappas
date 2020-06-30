@@ -104,7 +104,7 @@ reimbursementRouter.patch('/', authorizationMiddleware(['admin', 'finance-manage
     }
 });
 
-reimbursementRouter.get('/', async (req:Request ,res:Response, next:NextFunction)=>{
+reimbursementRouter.get('/', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request ,res:Response, next:NextFunction)=>{
     try {
         let allReimbursments = await getAllReimbursements();
         res.json(allReimbursments);
@@ -113,7 +113,7 @@ reimbursementRouter.get('/', async (req:Request ,res:Response, next:NextFunction
     }
 })
 
-reimbursementRouter.get('/:id', async (req:Request, res:Response, next:NextFunction)=>{
+reimbursementRouter.get('/:id', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
     let {id} = req.params;
     if(isNaN(+id)){
         res.status(400).send("ID must be a number");
