@@ -32,7 +32,7 @@ userRouter.get('/', authorizationMiddleware(['admin']), async (req:Request, res:
         Allowed Roles: admin, finance-manager
         Response: User
 */
-userRouter.get('/:id', authorizationMiddleware (['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
+userRouter.get('/:id', authorizationMiddleware (['admin', 'finance-manager', 'current']), async (req:Request, res:Response, next:NextFunction)=>{
     let {id} = req.params;
     if(isNaN(+id)){
         res.status(400).send("ID must be a number");
