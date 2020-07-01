@@ -16,7 +16,7 @@ userRouter.use(authenticationMiddleware); // authenticates user
         Response: User
 */
 
-userRouter.get('/', authorizationMiddleware(['admin']), async (req:Request, res:Response, next:NextFunction)=>{
+userRouter.get('/', authorizationMiddleware(['admin', 'finance-manager']), async (req:Request, res:Response, next:NextFunction)=>{
     try {
         let allUsers = await getAllUsers();
         res.json(allUsers);
