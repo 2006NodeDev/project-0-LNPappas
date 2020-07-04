@@ -18,6 +18,7 @@ import { AuthenticationFailureError } from './errors/AuthenticationFailureError'
 import { userRouter } from './routers/user-router';
 import { reimbursementRouter } from './routers/reimbursement-router';
 import { getUserByUserNameAndPassword } from './dao/user-dao';
+import { corsFilter } from './middleware/cors-filter';
 
 // returns pre-build express app, must run first
 const app = express();
@@ -25,6 +26,8 @@ const app = express();
 // middleware: body-parser, only parses json
 app.use(express.json());
 
+//middleware: cors filter
+app.use(corsFilter);
 // middleware: creates unique sessions 
 app.use(sessionMiddleware);
 
